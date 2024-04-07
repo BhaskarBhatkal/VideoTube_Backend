@@ -4,12 +4,14 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+//set the CORS
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
   })
 );
 
+//When the data comes from JSON
 app.use(
   express.json({
     limit: "20kb",
