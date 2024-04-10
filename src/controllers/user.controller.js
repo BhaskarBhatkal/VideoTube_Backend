@@ -282,6 +282,10 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 // Update account details
 const updateAccountDetails = asyncHandler(async (req, res) => {
+  // details from req.body
+  // check - not empty
+  // find the user and update the fullname and email field
+  // retrun a response and remove the password from response using select()
   const { fullName, email } = req.body;
 
   if (!fullName) {
@@ -311,6 +315,11 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
 // Update Avatar
 const updateAvatar = asyncHandler(async (req, res) => {
+  // Get the avatarLocal file path from req.file.path
+  // check for local path - not empty
+  // upload to cloudinary and check for it
+  // remove old file from the cloudinary
+  // find the user and update avatar ans send res and remove password while send res to frontend using select()
   const avatarLocalFilePath = req.file?.path;
   if (!avatarLocalFilePath) {
     throw new ApiError(400, " avatar file is missing ");
@@ -347,6 +356,11 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
 // Update Cover Image
 const updateCoverImage = asyncHandler(async (req, res) => {
+  // Get the cover image local  file path from req.file.path
+  // check for local path - not empty
+  // upload to cloudinary and check for it
+  // remove old file from the cloudinary
+  // find the user and update cover image and send res and remove password while send res to frontend using select()
   const coverImageLocalFilePath = req.file?.path;
   if (!coverImageLocalFilePath) {
     throw new ApiError(400, " cover image file is missing ");
@@ -386,6 +400,87 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "cover image successfully updated"));
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  if (!username?.trim()) {
+    throw new ApiError(400, "username is missing");
+  }
+
+  const channel = await User.aggregate([
+    {
+      // 1st stage
+      $match: {
+        username: username?.toLowerCase(),
+      },
+    },
+
+    {
+      // 2nd stage
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id", //it refers to user actually
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      // 3rd stage
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    {
+      //  4th stage
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers",
+        },
+        subscribedToCount: {
+          $size: "$subscribedTo",
+        },
+
+        isSubscribed: {
+          // Here it checks that, this loggedIn user exist within the object of $subscribers.subscriber
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      // 5th stage
+      // what all fields we want to send it to user
+      $project: {
+        username: 1,
+        fullName: 1,
+        coverImage: 1,
+        avatar: 1,
+        subscribersCount: 1,
+        subscribedToCount: 1,
+        isSubscribed: 1,
+      },
+    },
+  ]);
+
+  console.log("aggregated Channels in getUserChannelProfile: ", channel);
+
+  // if (!channel?.length) {
+  //   throw new ApiError(404, "channel does not exist");
+  // }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, channel[0], "user channel successfully fetched")
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -396,4 +491,5 @@ export {
   updateAccountDetails,
   updateAvatar,
   updateCoverImage,
+  getUserChannelProfile,
 };
