@@ -7,6 +7,7 @@ import {
 } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // Access token and refresh token
 const generateAccessAndRefreshToken = async (userId) => {
@@ -400,7 +401,17 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "cover image successfully updated"));
 });
 
+// Get users channel profile
 const getUserChannelProfile = asyncHandler(async (req, res) => {
+  // 1) Find the username from the url(req.params)
+  // 2) Check user - exit or not
+  // 3) Use the aggregation pipeline to achieve the result-----
+  // a) match the username
+  // b) find the subscribers using lookup
+  // c) FInd the the subscribedTo using lookup
+  // d) count these two
+  // e) give a isSubscribed statement to frontend(true or false)
+  // f) project the fields
   const { username } = req.params;
 
   if (!username?.trim()) {
@@ -470,14 +481,72 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
   console.log("aggregated Channels in getUserChannelProfile: ", channel);
 
-  // if (!channel?.length) {
-  //   throw new ApiError(404, "channel does not exist");
-  // }
+  if (!channel?.length) {
+    throw new ApiError(404, "channel does not exist");
+  }
 
   return res
     .status(200)
     .json(
       new ApiResponse(200, channel[0], "user channel successfully fetched")
+    );
+});
+
+// Get watch history
+const getWatchHistory = asyncHandler(async (req, res) => {
+  // 1) Find the user using aggregate
+  // 2) LookUp in videos and nested lookUp for video owner
+  // 3) and project the user fileds (return only needed fields)
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    avatar: 1,
+                    username: 1,
+                    fullName: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields: {
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistory,
+        "watch history successfully fetched"
+      )
     );
 });
 
@@ -492,4 +561,5 @@ export {
   updateAvatar,
   updateCoverImage,
   getUserChannelProfile,
+  getWatchHistory,
 };
