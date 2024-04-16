@@ -8,15 +8,15 @@ const videoSchema = new mongoose.Schema(
       required: true,
     },
     thumbnail: {
-      type: string, //Cloudinary Url
+      type: String, //Cloudinary Url
       required: true,
     },
     title: {
-      type: string,
+      type: String,
       required: true,
     },
     description: {
-      type: string,
+      type: String,
       required: true,
     },
     duration: {

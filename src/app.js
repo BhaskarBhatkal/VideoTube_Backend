@@ -25,8 +25,10 @@ app.use(cookieParser());
 //Routes Import
 import userRouter from "./routes/user.route.js";
 import subscriptionRouter from "./routes/subscription.routes.js";
+import videoRouter from "./routes/video.route.js";
 
 // Routes declaration
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/subscription", subscriptionRouter);
+app.use("/api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/videos", videoRouter);
 export { app };
