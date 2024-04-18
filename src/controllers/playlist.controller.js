@@ -25,6 +25,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, playlistData, "playlist successfully created"));
 });
 
+// Adding video to playlist
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
@@ -62,6 +63,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     );
 });
 
+// accessing users playlists
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
@@ -76,11 +78,36 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: "videos",
+        localField: "videos",
+        foreignField: "_id",
+        as: "playlistVideo",
+        pipeline: [
+          {
+            $project: {
+              thumbnail: 1,
+              title: 1,
+              videoFile: 1,
+              description: 1,
+              duration: 1,
+              views: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
       $project: {
         name: 1,
         description: 1,
-        owner: 1,
-        videos: 1,
+        description: 1,
+        playlistVideo: 1,
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
       },
     },
   ]);
@@ -96,4 +123,133 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     );
 });
 
-export { createPlaylist, addVideoToPlaylist, getUserPlaylists };
+// accessing user playlist by id
+const getPlaylistById = asyncHandler(async (req, res) => {
+  const { playlistId } = req.params;
+  if (!isValidObjectId(playlistId)) {
+    throw new ApiError(400, "invalid playlist id");
+  }
+
+  const playlist = await Playlist.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(playlistId),
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "videos",
+        foreignField: "_id",
+        as: "playlistVideo",
+        pipeline: [
+          {
+            $project: {
+              thumbnail: 1,
+              videoFile: 1,
+              title: 1,
+              description: 1,
+              duration: 1,
+              views: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        description: 1,
+        playlistVideo: 1,
+      },
+    },
+  ]);
+
+  if (!playlist.length === 0) {
+    throw new ApiError(400, "playlist not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, playlist, "playlist fetched successfully"));
+});
+
+// Removing video from playlist
+const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
+  const { videoId, playlistId } = req.params;
+
+  if (!playlistId || !videoId) {
+    throw new ApiError(400, "playlistId and videoid not found or invalid");
+  }
+
+  const playlist = await Playlist.findById({ _id: playlistId });
+  if (!playlist) {
+    throw new ApiError(400, "playlist not found");
+  }
+
+  const video = await Video.findById({ _id: videoId });
+  if (!video) {
+    throw new ApiError(200, "video not found");
+  }
+
+  await playlist.videos.remove(videoId);
+
+  deletedVideoData = await playlist.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "video successfully removed from playlist"));
+});
+
+// Deleting playlist
+const deletePlaylist = asyncHandler(async (req, res) => {
+  const { playlistId } = req.params;
+  if (!isValidObjectId(playlistId)) {
+  }
+
+  const deletedData = await Playlist.findByIdAndDelete({ _id: playlistId });
+  if (!deletedData) {
+    throw new ApiError(400, "playlist does not deleted");
+  }
+});
+
+// Update playlist details
+const updatePlaylist = asyncHandler(async (req, res) => {
+  const { playlistId } = req.params;
+  const { name, description } = req.body;
+
+  if (!isValidObjectId(playlistId)) {
+    throw new ApiError(400, "invalid playlist id");
+  }
+
+  if (!name || !description) {
+    throw new ApiError(400, "name and decsription are required");
+  }
+
+  const playlist = await Playlist.findByIdAndUpdate(
+    { _id: playlistId },
+    {
+      $set: {
+        name,
+        description,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, playlist, "playlist successfully updated"));
+});
+
+export {
+  createPlaylist,
+  addVideoToPlaylist,
+  getUserPlaylists,
+  getPlaylistById,
+  removeVideoFromPlaylist,
+  deletePlaylist,
+  updatePlaylist,
+};
