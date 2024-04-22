@@ -126,6 +126,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 // accessing user playlist by id
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
+
   if (!isValidObjectId(playlistId)) {
     throw new ApiError(400, "invalid playlist id");
   }
@@ -205,12 +206,17 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   if (!isValidObjectId(playlistId)) {
+    throw new ApiError(400);
   }
 
   const deletedData = await Playlist.findByIdAndDelete({ _id: playlistId });
   if (!deletedData) {
     throw new ApiError(400, "playlist does not deleted");
   }
+
+  return res
+    .statu(200)
+    .json(new ApiResponse(200, {}, "playlist successfully deleted"));
 });
 
 // Update playlist details
