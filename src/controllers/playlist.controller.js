@@ -180,7 +180,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { videoId, playlistId } = req.params;
 
   if (!playlistId || !videoId) {
-    throw new ApiError(400, "playlistId and videoid not found or invalid");
+    throw new ApiError(400, "playlistId and videoId not found or invalid");
   }
 
   const playlist = await Playlist.findById({ _id: playlistId });
