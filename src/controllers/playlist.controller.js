@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import { Video } from "../models/video.model.js";
 
-// Playlist creation
+// CREATE PLAYLIST
 const createPlaylist = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
 
@@ -27,7 +27,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     );
 });
 
-// Adding video to playlist
+// ADD VIDEO TO PLAYLIST
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
@@ -65,7 +65,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     );
 });
 
-// accessing users playlists
+// ACCESSING USERS PLAYLIST
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
@@ -125,7 +125,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     );
 });
 
-// accessing user playlist by id
+// ACCESSING USERS PLAYLIST BY ID
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
 
@@ -177,7 +177,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, playlist, "playlist fetched successfully"));
 });
 
-// Removing video from playlist
+// REMOVING VIDEO FROM PLAYLIST
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { videoId, playlistId } = req.params;
 
@@ -204,7 +204,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "video successfully removed from playlist"));
 });
 
-// Deleting playlist
+// DELETING PLAYLIST
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   if (!isValidObjectId(playlistId)) {
@@ -221,7 +221,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "playlist successfully deleted"));
 });
 
-// Update playlist details
+// UPDATE PLAYLIST
 const updatePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   const { name, description } = req.body;

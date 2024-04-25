@@ -26,18 +26,13 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     let toggleLike;
 
     if (likedVideoData) {
-      toggleLike = await Like.findOneAndDelete({
-        likedBy: req.user?._id,
-        video: videoId,
-      });
+      toggleLike = await Like.findByIdAndDelete(likedVideoData._id);
     } else {
       toggleLike = await Like.create({
         likedBy: req.user?._id,
         video: videoId,
       });
     }
-
-    await toggleLike.save();
 
     return res
       .status(200)
@@ -67,18 +62,13 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     let toggleLike;
 
     if (likedCommentData) {
-      toggleLike = await Like.findOneAndDelete({
-        comment: commentId,
-        likedBy: req.user?._id,
-      });
+      toggleLike = await Like.findByIdAndDelete(likedCommentData._id);
     } else {
       toggleLike = await Like.create({
         likedBy: req.user?._id,
         comment: commentId,
       });
     }
-
-    await toggleLike.save();
 
     return res
       .status(200)
