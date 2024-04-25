@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-// All the routes will be secured routes
+// APPLY verifyJWT MIDDLEWARE TO ALL ROUTES IN THIS FILE
 router.use(verifyJWT);
 
 router.route("/c/:channelId").post(toggleSubscription);

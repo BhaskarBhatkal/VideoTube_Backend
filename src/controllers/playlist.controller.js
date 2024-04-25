@@ -13,7 +13,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "name and description cannot be empty");
   }
 
-  const playlistData = await Playlist.create({
+  const createdPlaylistData = await Playlist.create({
     name,
     description,
     owner: req.user?._id,
@@ -22,7 +22,9 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, playlistData, "playlist successfully created"));
+    .json(
+      new ApiResponse(200, createdPlaylistData, "playlist successfully created")
+    );
 });
 
 // Adding video to playlist
@@ -166,7 +168,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!playlist.length === 0) {
+  if (!playlist) {
     throw new ApiError(400, "playlist not found");
   }
 

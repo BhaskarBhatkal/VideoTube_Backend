@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-// Publishing videos
+// PUBLISHING VIDEO
 const publishAVideo = asyncHandler(async (req, res) => {
   // 1) get the title and description from body
   // 2) get video and thumbnail filepath from req.files.path
@@ -64,7 +64,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all videos of loggedin user
+// GET ALL VIDEOS(loggedIn user)
 const getAllVideos = asyncHandler(async (req, res) => {
   // 1) find these in req.query
   // 2) get all video which match loggedIn user and sort them in descending order
@@ -106,7 +106,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, data, "videos fetched successfully"));
 });
 
-// get video
+// GET A VIDEO BY ID
 const getVideoById = asyncHandler(async (req, res) => {
   // 1) find video id - params
   // 2) find video - using videoId
@@ -126,7 +126,7 @@ const getVideoById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "video successfully fetched"));
 });
 
-// Update video
+// UPDATE A VIDEO
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { title, description } = req.body;
@@ -158,7 +158,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     );
 });
 
-// Update thumbnail
+// UPDATE THUMBNAIL
 const updateVideoTumbnail = asyncHandler(async (req, res) => {
   // 1) thumbnailid - params
   // 2) check it
@@ -207,7 +207,7 @@ const updateVideoTumbnail = asyncHandler(async (req, res) => {
   );
 });
 
-// Deleting a video
+// DELETING A VIDEO
 const deleteVideo = asyncHandler(async (req, res) => {
   // 1) find a video id from params
   // 2) check is video id is valid
@@ -228,7 +228,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Video successfully deleted"));
 });
 
-// toggle publish status
+// TOGGLE PUBLISH STATUS
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 

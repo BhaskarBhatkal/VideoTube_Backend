@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Like } from "../models/like.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Toggle the video likes
+// TOGGLE VIDEO LIKE
 const toggleVideoLike = asyncHandler(async (req, res) => {
   // 1) find the video id from req.params
   // 2) Find the Like document
@@ -50,8 +50,8 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
   }
 });
 
-// toggle comment data
-const toggleCommentData = asyncHandler(async (req, res) => {
+// TOGGLE COMMENT LIKE
+const toggleCommentLike = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
 
   if (!isValidObjectId(commentId)) {
@@ -94,7 +94,7 @@ const toggleCommentData = asyncHandler(async (req, res) => {
   }
 });
 
-// get the liked videos
+// GET LIKED VIDEOS
 const getLikedVideos = asyncHandler(async (req, res) => {
   const likedVideo = await Like.find({ likedBy: req.user?._id }).populate({
     path: "video",
@@ -112,4 +112,4 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     );
 });
 
-export { toggleVideoLike, toggleCommentData, getLikedVideos };
+export { toggleVideoLike, toggleCommentLike, getLikedVideos };

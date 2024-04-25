@@ -13,6 +13,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
+// APPLY verifyJWT MIDDLEWARE TO ALL ROUTES IN THIS FILE
 router.use(verifyJWT);
 
 router.route("/publish-video").post(

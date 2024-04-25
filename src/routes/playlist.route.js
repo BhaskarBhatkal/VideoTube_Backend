@@ -7,6 +7,8 @@ import {
 } from "../controllers/playlist.controller.js";
 
 const router = Router();
+
+// APPLY verifyJWT MIDDLEWARE TO ALL ROUTES IN THIS FILE
 router.use(verifyJWT);
 
 router.route("/").post(createPlaylist);

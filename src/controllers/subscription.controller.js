@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Subscription } from "../models/subscription.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Toggleling the subscription
+// TOGGLE THE SUBSCRIBING(subscribe or unsbuscribe)
 const toggleSubscription = asyncHandler(async (req, res) => {
   // 1) Find the channel id in params
   // 2) Check if channel id is vallid
@@ -54,7 +54,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   }
 });
 
-// Get logged in user subscribers
+// GET USER SUBSCRIBERS(logged In)
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   // 1) Match the logged In user(channel)
   // 2) lookup in user
@@ -98,7 +98,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     );
 });
 
-// Get the  subscribed channels of user
+// GET THE USER SUBSCRIBED CHANNELS(logged In user)
 const getUserSubscribedChannels = asyncHandler(async (req, res) => {
   // 1) Match the logged In user
   // 2) lookup in user

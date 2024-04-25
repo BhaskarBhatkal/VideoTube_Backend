@@ -9,7 +9,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-// Access token and refresh token
+// ACCESS TOKEN AND REFRESH TOKEN
 const generateAccessAndRefreshToken = async (userId) => {
   // Find the user
   try {
@@ -32,7 +32,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
-// Registering user
+// REGISTERING USER
 const registerUser = asyncHandler(async (req, res) => {
   // 1) Get the user details from frontend
   // 2) Validation - shouldn't be empty
@@ -115,7 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdUser, "User successfully registered"));
 });
 
-// Login user
+// LOGIN USER
 const loginUser = asyncHandler(async (req, res) => {
   // 1) Get the user deatils from the Req.body - email or username and password
   // 2) Check is user exist or not
@@ -174,7 +174,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-// Logout the user
+// LOGOUT THE USER
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, {
     $unset: {
@@ -195,6 +195,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user successfully logged out"));
 });
 
+// RE-ACCESSING TOKENS (when access token expires)
 const refreshedAccessToken = asyncHandler(async (req, res) => {
   // 1) Get the current refreshToken from cookies if not, body
   // 2) Verify the current refreshToken and will get decodedToken
@@ -240,7 +241,7 @@ const refreshedAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-// Update user password
+// UPDATE USER PASSWORD
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   // 1) Get the password data from the body
   // 2) Check for both the passwrd - not empty
@@ -274,14 +275,14 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "password successfully changed"));
 });
 
-// Get current user
+// GET CURRENT USER
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "current user successfully fetched"));
 });
 
-// Update account details
+// UPDATE ACCOUNT DETAILS
 const updateAccountDetails = asyncHandler(async (req, res) => {
   // details from req.body
   // check - not empty
@@ -314,7 +315,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "account details successfully updated"));
 });
 
-// Update Avatar
+// UPDATE AVATAR
 const updateAvatar = asyncHandler(async (req, res) => {
   // Get the avatarLocal file path from req.file.path
   // check for local path - not empty
@@ -355,7 +356,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Avatar successfully updated"));
 });
 
-// Update Cover Image
+// UPDATE COVER IMAGE
 const updateCoverImage = asyncHandler(async (req, res) => {
   // Get the cover image local  file path from req.file.path
   // check for local path - not empty
@@ -401,7 +402,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "cover image successfully updated"));
 });
 
-// Get users channel profile
+// GET USER CHANNEL PROFILE
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   // 1) Find the username from the url(req.params)
   // 2) Check user - exit or not
@@ -492,7 +493,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     );
 });
 
-// Get watch history
+// GET USER WATCH HISTORY
 const getWatchHistory = asyncHandler(async (req, res) => {
   // 1) Find the user using aggregate
   // 2) LookUp in videos and nested lookUp for video owner
@@ -500,7 +501,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id),
+        _id: new mongoose.Types.ObjectId(req.user?._id),
       },
     },
     {
