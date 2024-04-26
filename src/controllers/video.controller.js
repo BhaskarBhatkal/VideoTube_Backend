@@ -64,23 +64,28 @@ const publishAVideo = asyncHandler(async (req, res) => {
   }
 });
 
-// GET ALL VIDEOS(loggedIn user)
+// GET USER ALL VIDEOS
 const getAllVideos = asyncHandler(async (req, res) => {
   // 1) find these in req.query
-  // 2) get all video which match loggedIn user and sort them in descending order
-  // 3) Paginate the video(it used to display the large sts of data into small chunks)
+  // 2) get all video which match user and sort them in descending order
+  // 3) Paginate the video(it used to display the large sets of data into small chunks)
   // 4) return results
   const {
     page = 1,
     limit = 10,
     sortBy = "createdAt",
     sortType = "desc",
+    userId,
   } = req.query;
+
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "user id is not valid");
+  }
 
   const videos = Video.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(req.user?._id),
+        owner: new mongoose.Types.ObjectId(userId),
       },
     },
   ]).sort({
