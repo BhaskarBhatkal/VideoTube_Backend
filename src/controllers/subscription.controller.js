@@ -20,8 +20,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
       subscriber: req.user?._id,
       channel: channelId,
     }).lean();
-
-    console.log(channelData);
+    // console.log(channelData);
 
     let data;
 
@@ -85,7 +84,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  console.log("channelSubscribers: ", channelSubscribers);
+  // console.log("channelSubscribers: ", channelSubscribers);
 
   return res
     .status(200)

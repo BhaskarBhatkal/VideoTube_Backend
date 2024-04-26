@@ -9,7 +9,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   // 3) Do a part ways using select function
   // 4) Set the req.user = user
   try {
-    // 1)
     const token =
       req.cookies?.accessToken ||
       req.header("Autherization")?.replace("Bearer ", "");
@@ -17,11 +16,9 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, "Unautherized request");
     }
 
-    // 2)
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRETE);
-    console.log("Decoded token is: ", decodedToken);
+    // console.log("Decoded token is: ", decodedToken);q
 
-    // 3)
     const user = await User.findById(decodedToken?._id).select(
       "-password -refreshToken"
     );
@@ -30,7 +27,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new ApiError(400, "Invalid Access token");
     }
 
-    // 4)
     req.user = user;
     next();
   } catch (error) {

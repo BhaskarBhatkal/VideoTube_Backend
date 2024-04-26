@@ -124,7 +124,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // 5) Send cookie
 
   const { email, username, password } = req.body;
-  console.log("username: ", username);
+  // console.log("username: ", username);
 
   if (!email && !username) {
     throw new ApiError(400, "username or email cannot be empty");
@@ -334,6 +334,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
       " avatar is missing while uploading on cloudinary "
     );
   }
+  // console.log("Avatar image: ", avatar);
 
   if (req.user?.avatar) {
     // Get the old avatar publicId from the avatar url:(last one but excluding extention(.jpeg))
